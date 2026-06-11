@@ -44,6 +44,14 @@ Actions workflow. Open the completed workflow run and download the
 `Speak-Scripture-Android-APK` artifact. The extracted file is named
 `Speak-Scripture-debug.apk`.
 
+The currently published debug APK is also available directly from:
+
+`https://speak-scripture.vercel.app/downloads/Speak-Scripture-v1.0-debug.apk`
+
+SHA-256:
+
+`48B6DD453DE0962F2B5256197E9D3B0DDEEBAEB2EF651072D027D5D904719E3D`
+
 ## Release APK or AAB
 
 Create a private signing keystore and keep credentials outside source control. In Android Studio choose **Build > Generate Signed Bundle / APK**, select Android App Bundle for Play Store submission, and save the output from `android/app/build/outputs/bundle/release/`.

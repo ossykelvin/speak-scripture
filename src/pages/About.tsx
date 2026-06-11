@@ -1,4 +1,4 @@
-import { BookOpen, Info, ArrowLeft } from "lucide-react";
+import { BookOpen, Info, ArrowLeft, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { appConfig } from "@/config";
@@ -60,6 +60,18 @@ const About = () => {
             <p>Audio: <span className="text-foreground">Device microphone</span></p>
             <p>Storage: <span className="text-foreground">{appConfig.storageProvider}</span></p>
           </div>
+
+          <a
+            href="/downloads/Speak-Scripture-v1.0-debug.apk"
+            download
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            <Download className="h-4 w-4" />
+            Download Android APK
+          </a>
+          <p className="text-center text-xs">
+            Android 7.0 or newer. You may need to allow installation from your browser.
+          </p>
         </div>
       </div>
     </div>

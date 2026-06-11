@@ -12,6 +12,7 @@
 
 - Added a GitHub Actions workflow that builds the current web bundle and Android debug APK.
 - Publishes `Speak-Scripture-debug.apk` as a downloadable workflow artifact for 30 days.
+- Published the verified APK under `/downloads` and added an in-app download link.
 
 ### fix(supabase): support controlled project migration
 
