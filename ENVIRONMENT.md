@@ -37,6 +37,16 @@ npx supabase secrets set ALLOWED_ORIGIN="https://your-domain.example"
 
 `ALLOWED_ORIGIN="*"` is acceptable for local testing but a production domain is preferred.
 
+When migrating between Supabase projects before a new provider key is available, the Edge
+Function can temporarily forward extraction requests to the previous function:
+
+```bash
+npx supabase secrets set UPSTREAM_REFERENCE_FUNCTION_URL="https://old-project.supabase.co/functions/v1/extract-references"
+npx supabase secrets set UPSTREAM_REFERENCE_FUNCTION_ANON_KEY="old-project-anon-key"
+```
+
+Remove both fallback values after configuring `LOVABLE_API_KEY`.
+
 ## Capacitor Build Values
 
 Optional shell variables:

@@ -30,8 +30,36 @@ serve(async (req) => {
       });
     }
 
+    const upstreamUrl = Deno.env.get("UPSTREAM_REFERENCE_FUNCTION_URL");
+    const upstreamAnonKey = Deno.env.get("UPSTREAM_REFERENCE_FUNCTION_ANON_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    if (!LOVABLE_API_KEY && upstreamUrl && upstreamAnonKey) {
+      const upstreamResponse = await fetchWithRetry(upstreamUrl, {
+        method: "POST",
+        headers: {
+          apikey: upstreamAnonKey,
+          Authorization: `Bearer ${upstreamAnonKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!upstreamResponse.ok) {
+        throw new Error(`Upstream reference extraction failed with status ${upstreamResponse.status}`);
+      }
+
+      return new Response(await upstreamResponse.text(), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!LOVABLE_API_KEY) {
+      throw new Error(
+        "Configure LOVABLE_API_KEY or the UPSTREAM_REFERENCE_FUNCTION_URL and UPSTREAM_REFERENCE_FUNCTION_ANON_KEY fallback",
+      );
+    }
     const aiGatewayUrl = Deno.env.get("AI_GATEWAY_URL");
     const aiModel = Deno.env.get("AI_MODEL");
     if (!aiGatewayUrl) throw new Error("AI_GATEWAY_URL is not configured");

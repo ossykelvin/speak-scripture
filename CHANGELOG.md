@@ -2,6 +2,11 @@
 
 ## 2026-06-11
 
+### fix(supabase): support controlled project migration
+
+- Added an optional upstream Edge Function fallback when the private AI provider key cannot be migrated.
+- Kept the fallback server-side and environment-configured so browser code contains no provider credentials.
+
 ### feat(config): centralize runtime configuration
 
 - Added typed public environment parsing in `src/config`.
