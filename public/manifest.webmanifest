@@ -1,0 +1,16 @@
+{
+  "name": "Speak Scripture",
+  "short_name": "Speak Scripture",
+  "description": "Detect Bible references in speech or text and display the complete verse.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#166534",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
