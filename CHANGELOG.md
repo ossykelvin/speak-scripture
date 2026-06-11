@@ -2,6 +2,12 @@
 
 ## 2026-06-11
 
+### design(branding): replace Lovable icon assets
+
+- Added a custom Speak Scripture open-Bible and sound-wave app mark.
+- Replaced the browser favicon, Apple touch icon, PWA icons, and Android launcher/adaptive icon assets.
+- Updated web manifest and browser theme colors to match the new deep-navy brand.
+
 ### fix(supabase): support controlled project migration
 
 - Added an optional upstream Edge Function fallback when the private AI provider key cannot be migrated.
