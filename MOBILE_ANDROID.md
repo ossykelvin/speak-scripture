@@ -37,6 +37,13 @@ cd android
 .\gradlew assembleDebug
 ```
 
+## Downloadable GitHub Build
+
+Every Android-related push to `main` runs the **Build Android APK** GitHub
+Actions workflow. Open the completed workflow run and download the
+`Speak-Scripture-Android-APK` artifact. The extracted file is named
+`Speak-Scripture-debug.apk`.
+
 ## Release APK or AAB
 
 Create a private signing keystore and keep credentials outside source control. In Android Studio choose **Build > Generate Signed Bundle / APK**, select Android App Bundle for Play Store submission, and save the output from `android/app/build/outputs/bundle/release/`.

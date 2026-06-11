@@ -1,0 +1,82 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "android/**"
+      - "public/**"
+      - "src/**"
+      - "capacitor.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - ".github/workflows/android-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android packages
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and sync web application
+        env:
+          VITE_APP_NAME: Speak Scripture
+          VITE_APP_URL: https://speak-scripture.vercel.app
+          VITE_BIBLE_API_BASE_URL: https://bible-api.com
+          VITE_DEFAULT_BIBLE_TRANSLATION: kjv
+          VITE_ANALYTICS_ENABLED: "true"
+          VITE_BADGE_THRESHOLDS: 1,10,25,50,100,250
+          VITE_STORAGE_PROVIDER: localStorage
+          VITE_REFERENCE_FUNCTION_NAME: extract-references
+          VITE_SUPABASE_PROJECT_ID: glyrspieyqcbdrwbwlir
+          VITE_SUPABASE_URL: https://glyrspieyqcbdrwbwlir.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_wk3QFzjOxI7C5o1WZufyNw_BqD-WF67
+        run: npm run mobile:build
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Name APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Speak-Scripture-debug.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Speak-Scripture-Android-APK
+          path: Speak-Scripture-debug.apk
+          if-no-files-found: error
+          retention-days: 30

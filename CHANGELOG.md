@@ -8,6 +8,11 @@
 - Replaced the browser favicon, Apple touch icon, PWA icons, and Android launcher/adaptive icon assets.
 - Updated web manifest and browser theme colors to match the new deep-navy brand.
 
+### build(android): publish downloadable APK artifacts
+
+- Added a GitHub Actions workflow that builds the current web bundle and Android debug APK.
+- Publishes `Speak-Scripture-debug.apk` as a downloadable workflow artifact for 30 days.
+
 ### fix(supabase): support controlled project migration
 
 - Added an optional upstream Edge Function fallback when the private AI provider key cannot be migrated.
