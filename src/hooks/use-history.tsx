@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import {
   HISTORY_SYNC_LIMIT,
-  clearGuestHistory,
+  applyAuthoritativeCloudHistory,
   historyEntryToRemote,
   loadHistory,
   mergeHistory,
@@ -40,14 +40,12 @@ export const useHistory = () => useContext(HistoryContext);
 async function recordProfileHistorySync(
   userId: string,
   entryCount: number,
-  markMigrated = false,
 ) {
   const syncedAt = new Date().toISOString();
   return supabase.from("profiles").upsert({
     user_id: userId,
     history_entry_count: entryCount,
     last_history_sync_at: syncedAt,
-    ...(markMigrated ? { history_migrated_at: syncedAt } : {}),
   }, { onConflict: "user_id" });
 }
 
@@ -80,9 +78,7 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
 
     let cancelled = false;
     const localUserHistory = loadHistory(userId);
-    const guestHistory = loadHistory();
-    const initialHistory = mergeHistory(localUserHistory, guestHistory);
-    replaceHistory(initialHistory, userId);
+    replaceHistory(localUserHistory, userId);
     setSyncing(true);
     setSyncError(null);
 
@@ -102,26 +98,16 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
       }
 
       const remoteHistory = (data as RemoteHistoryRow[]).map(remoteRowToHistoryEntry);
-      const merged = mergeHistory(historyRef.current, remoteHistory);
-      replaceHistory(merged, userId);
-
-      if (merged.length > 0) {
-        const { error: upsertError } = await supabase
-          .from("search_history")
-          .upsert(merged.map((entry) => historyEntryToRemote(entry, userId)), { onConflict: "id" });
-
-        if (cancelled) return;
-        if (upsertError) {
-          setSyncError("Some local progress could not be uploaded. It will remain available on this device.");
-          setSyncing(false);
-          return;
-        }
-      }
+      const authoritativeHistory = applyAuthoritativeCloudHistory(
+        localUserHistory,
+        historyRef.current,
+        remoteHistory,
+      );
+      replaceHistory(authoritativeHistory, userId);
 
       const { error: profileSyncError } = await recordProfileHistorySync(
         userId,
-        merged.length,
-        guestHistory.length > 0,
+        authoritativeHistory.length,
       );
 
       if (cancelled) return;
@@ -131,7 +117,6 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      clearGuestHistory();
       setSyncing(false);
     })();
 
@@ -153,7 +138,7 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
       .upsert(historyEntryToRemote(entry, userId), { onConflict: "id" })
       .then(async ({ error }) => {
         if (error) {
-          setSyncError("This search is saved locally and will sync when cloud storage is available.");
+          setSyncError("This search is saved on this device, but the online profile was not updated.");
           return;
         }
 

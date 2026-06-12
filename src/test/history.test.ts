@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  applyAuthoritativeCloudHistory,
   createHistoryEntry,
   getHistoryStorageKey,
   historyEntryToRemote,
@@ -68,6 +69,30 @@ describe("history entries", () => {
     };
 
     expect(mergeHistory([older], [newer, older]).map((entry) => entry.id)).toEqual(["newer", "older"]);
+  });
+
+  it("replaces login-time local history with cloud history while retaining new session entries", () => {
+    const staleLocal = {
+      ...createHistoryEntry({ query: "local only", references: [], source: "manual" }),
+      id: "stale-local",
+      date: "2026-06-10T10:00:00.000Z",
+    };
+    const remote = {
+      ...createHistoryEntry({ query: "Romans 8:28", references: [reference], source: "manual" }),
+      id: "remote",
+      date: "2026-06-11T10:00:00.000Z",
+    };
+    const currentSession = {
+      ...createHistoryEntry({ query: "Psalm 23", references: [reference], source: "manual" }),
+      id: "current-session",
+      date: "2026-06-12T10:00:00.000Z",
+    };
+
+    expect(applyAuthoritativeCloudHistory(
+      [staleLocal],
+      [currentSession, staleLocal],
+      [remote],
+    ).map((entry) => entry.id)).toEqual(["current-session", "remote"]);
   });
 
   it("uses isolated local keys and round-trips Supabase rows", () => {

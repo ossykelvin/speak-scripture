@@ -57,4 +57,4 @@ The generated native project is in `android/`. Build and sync the web app with `
 
 ## Current Data Model
 
-Authentication, profile names, and signed-in search history are cloud-backed. Search history is also cached locally for responsive and offline-friendly access. Guest history remains local and is merged into the user's profile after a successful sign-in and cloud sync.
+Authentication, profile names, and signed-in search history are cloud-backed. Search history is also cached locally for responsive access. After sign-in, the Supabase history replaces the signed-in account's device cache. Guest history remains separate and is not uploaded automatically.

@@ -6,7 +6,8 @@
 
 - Added an RLS-protected Supabase search history table tied to authenticated users.
 - Kept user-scoped localStorage for offline access and fast startup.
-- Merges guest, device, and cloud history on sign-in without duplicating searches.
+- Replaces the signed-in account's device history with authoritative Supabase history after login.
+- Keeps guest history separate instead of uploading it during authentication.
 - Shows cloud synchronization status on Home and Profile.
 - Records successful local-history imports and sync counts on the user's profile.
 

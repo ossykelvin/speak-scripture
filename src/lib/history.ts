@@ -64,6 +64,16 @@ export function mergeHistory(...groups: HistoryEntry[][]): HistoryEntry[] {
     .slice(0, MAX_HISTORY_ENTRIES);
 }
 
+export function applyAuthoritativeCloudHistory(
+  localHistoryAtLogin: HistoryEntry[],
+  currentHistory: HistoryEntry[],
+  remoteHistory: HistoryEntry[],
+): HistoryEntry[] {
+  const staleLocalIds = new Set(localHistoryAtLogin.map((entry) => entry.id));
+  const currentSessionEntries = currentHistory.filter((entry) => !staleLocalIds.has(entry.id));
+  return mergeHistory(currentSessionEntries, remoteHistory);
+}
+
 export function getHistoryStorageKey(userId?: string | null): string {
   return userId ? `${STORAGE_KEY}:${userId}` : STORAGE_KEY;
 }

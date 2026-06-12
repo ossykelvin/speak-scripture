@@ -218,7 +218,8 @@ state were inspected at 320x568, 390x844, 412x915, and 800x360.
 1. Real-device installation, launch, microphone quality, permission dialogs, background/resume,
    rotation transitions, and process-death recovery remain untested.
 2. Native Google OAuth and email confirmation callback handling is not release-ready.
-3. Signed-in history is synchronized to Supabase at sign-in/app launch and after each search;
+3. Signed-in history is loaded authoritatively from Supabase at sign-in/app launch and new searches
+   are uploaded after creation;
    it does not currently use real-time subscriptions while the same account is open on two devices.
 4. History contains user search/spoken text. Android backup is disabled, but the local cache and
    account-level cloud records should be covered by a user-facing retention policy.
