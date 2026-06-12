@@ -34,6 +34,7 @@ import {
 } from "@/lib/history";
 import { useTheme } from "@/hooks/use-theme";
 import { appConfig } from "@/config";
+import { withTimeout } from "@/lib/async";
 
 interface SessionSummary {
   duration: number;
@@ -85,9 +86,12 @@ const Index = () => {
     setIsProcessing(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke(appConfig.referenceFunctionName, {
-        body: { text: cleanText },
-      });
+      const { data, error } = await withTimeout(
+        supabase.functions.invoke(appConfig.referenceFunctionName, {
+          body: { text: cleanText },
+        }),
+        appConfig.requestTimeoutMs,
+      );
       if (error) throw error;
 
       const extracted = Array.isArray(data?.references)
@@ -151,8 +155,11 @@ const Index = () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to process this text";
       const isFunctionTransportError = message.toLowerCase().includes("failed to send a request");
+      const isTimeoutError = message.toLowerCase().includes("timed out");
       setLookupMessage(
-        isFunctionTransportError
+        isTimeoutError
+          ? "Scripture detection took too long. Check your connection and try again."
+          : isFunctionTransportError
           ? "Unable to reach scripture detection. Check your internet connection and try again."
           : "Scripture detection is temporarily unavailable. Please try again.",
       );
@@ -217,24 +224,44 @@ const Index = () => {
             {appConfig.appName}
           </h1>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1">
           {references.length > 0 && (
-            <button onClick={clearAll} aria-label="Clear references" className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={clearAll}
+              aria-label="Clear references"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
+            >
               <Trash2 className="h-4 w-4" />
             </button>
           )}
-          <button onClick={toggleTheme} aria-label="Toggle theme" className="text-muted-foreground hover:text-foreground">
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
+          >
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </button>
-          <button onClick={() => navigate("/profile")} aria-label="Profile" className="text-muted-foreground hover:text-foreground">
+          <button
+            onClick={() => navigate("/profile")}
+            aria-label="Profile"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
+          >
             <UserCircle className="h-4 w-4" />
           </button>
           {appConfig.analyticsEnabled && (
-            <button onClick={() => navigate("/analytics")} aria-label="Analytics" className="text-muted-foreground hover:text-foreground">
+            <button
+              onClick={() => navigate("/analytics")}
+              aria-label="Analytics"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
+            >
               <BarChart3 className="h-4 w-4" />
             </button>
           )}
-          <button onClick={() => navigate("/about")} aria-label="About" className="text-muted-foreground hover:text-foreground">
+          <button
+            onClick={() => navigate("/about")}
+            aria-label="About"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
+          >
             <Info className="h-4 w-4" />
           </button>
         </div>

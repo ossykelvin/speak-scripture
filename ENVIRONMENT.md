@@ -7,6 +7,7 @@ Copy `.env.example` to `.env.local` for local development. Add the same public `
 | Variable | Required | Purpose |
 | --- | --- | --- |
 | `VITE_APP_NAME` | No | Display name. Defaults to `Speak Scripture`. |
+| `VITE_APP_VERSION` | No | User-visible application version. Defaults to `1.1.0`. |
 | `VITE_APP_URL` | Recommended | Canonical local or deployed URL. |
 | `VITE_BIBLE_API_BASE_URL` | Yes | Bible API origin used for public verse lookup requests. |
 | `VITE_DEFAULT_BIBLE_TRANSLATION` | No | Translation code used for verse lookup. Defaults to `kjv`. |
@@ -14,6 +15,7 @@ Copy `.env.example` to `.env.local` for local development. Add the same public `
 | `VITE_BADGE_THRESHOLDS` | No | Six ascending comma-separated positive integers. |
 | `VITE_STORAGE_PROVIDER` | No | Documents the active history provider. Currently only `localStorage` is implemented. |
 | `VITE_REFERENCE_FUNCTION_NAME` | No | Supabase Edge Function name. Defaults to `extract-references`. |
+| `VITE_REQUEST_TIMEOUT_MS` | No | Positive request timeout in milliseconds. Defaults to `15000`. |
 | `VITE_SUPABASE_URL` | Yes | Supabase project URL. |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Yes | Supabase anon/publishable browser key. |
 | `VITE_SUPABASE_PROJECT_ID` | Recommended | Project identifier used by tooling and documentation. |

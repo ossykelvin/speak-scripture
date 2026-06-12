@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "mobile:init": "cap init \"Speak Scripture\" \"com.koptechnology.speakscripture\" --web-dir dist",
     "mobile:add:android": "cap add android",
-    "mobile:build": "npm run build && cap sync android",
+    "mobile:build": "npm run build && npm run mobile:prune-downloads && cap sync android",
+    "mobile:prune-downloads": "node scripts/prune-mobile-downloads.mjs",
     "mobile:sync": "cap sync android",
     "mobile:open:android": "cap open android"
   },

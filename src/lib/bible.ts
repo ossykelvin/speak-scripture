@@ -64,10 +64,13 @@ export async function fetchVerseText(
     ? `${ref.verseStart}-${ref.verseEnd}`
     : `${ref.verseStart}`;
   const query = `${ref.book}+${ref.chapter}:${verseRange}`;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), appConfig.requestTimeoutMs);
 
   try {
     const response = await fetch(
       `${appConfig.bibleApiBaseUrl}/${encodeURIComponent(query)}?translation=${encodeURIComponent(translation)}`,
+      { signal: controller.signal },
     );
     if (!response.ok) throw new Error(`Bible API request failed with status ${response.status}`);
 
@@ -77,5 +80,7 @@ export async function fetchVerseText(
   } catch (error) {
     console.error("Verse lookup failed:", error);
     throw new Error("Verse text is temporarily unavailable");
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

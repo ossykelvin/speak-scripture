@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getBadgeProgress, getBadges, getCurrentTitle } from "@/lib/badges";
-import { parseBadgeThresholds } from "@/config";
+import { parseBadgeThresholds, parsePositiveInteger } from "@/config";
 
 describe("badge configuration", () => {
   it("parses six sorted unique thresholds", () => {
@@ -9,6 +9,12 @@ describe("badge configuration", () => {
 
   it("falls back when threshold configuration is incomplete", () => {
     expect(parseBadgeThresholds("1,10")).toEqual([1, 10, 25, 50, 100, 250]);
+  });
+
+  it("parses positive integer configuration with a safe fallback", () => {
+    expect(parsePositiveInteger("12000", 15000)).toBe(12000);
+    expect(parsePositiveInteger("invalid", 15000)).toBe(15000);
+    expect(parsePositiveInteger("-1", 15000)).toBe(15000);
   });
 
   it("unlocks badges and reports the next target", () => {

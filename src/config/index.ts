@@ -11,6 +11,11 @@ function readBoolean(name: keyof ImportMetaEnv, fallback: boolean): boolean {
   return value.toLowerCase() === "true";
 }
 
+export function parsePositiveInteger(value: string | undefined, fallback: number): number {
+  const parsed = Number.parseInt(value ?? "", 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
 export function parseBadgeThresholds(value?: string): number[] {
   if (!value) return DEFAULT_BADGE_THRESHOLDS;
 
@@ -27,6 +32,7 @@ export function parseBadgeThresholds(value?: string): number[] {
 
 export const appConfig = {
   appName: readString("VITE_APP_NAME", "Speak Scripture"),
+  appVersion: readString("VITE_APP_VERSION", "1.1.0"),
   appUrl: readString(
     "VITE_APP_URL",
     typeof window === "undefined" ? "http://localhost:8080" : window.location.origin,
@@ -37,6 +43,7 @@ export const appConfig = {
   badgeThresholds: parseBadgeThresholds(readString("VITE_BADGE_THRESHOLDS")),
   storageProvider: readString("VITE_STORAGE_PROVIDER", "localStorage"),
   referenceFunctionName: readString("VITE_REFERENCE_FUNCTION_NAME", "extract-references"),
+  requestTimeoutMs: parsePositiveInteger(readString("VITE_REQUEST_TIMEOUT_MS"), 15_000),
   supabase: {
     url: readString("VITE_SUPABASE_URL"),
     publishableKey: readString("VITE_SUPABASE_PUBLISHABLE_KEY"),

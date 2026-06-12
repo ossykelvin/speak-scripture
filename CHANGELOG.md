@@ -8,6 +8,11 @@
 - Recorded every microphone and manual lookup immediately in history.
 - Added successful-search totals and recent successful searches to the user profile.
 - Removed narrow-screen overflow and added Android safe-area layout support.
+- Increased primary mobile navigation controls to Android-friendly touch targets.
+- Removed downloadable APK files from packaged WebView assets to prevent recursive APK growth.
+- Disabled Android backup for locally stored conversation history.
+- Added configurable request timeouts for scripture detection and verse retrieval.
+- Advanced Android and About-screen version metadata to `1.1.0` (`versionCode 2`).
 
 ### fix(android): allow native WebView Edge Function requests
 

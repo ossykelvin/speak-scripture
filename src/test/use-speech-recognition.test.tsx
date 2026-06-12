@@ -74,4 +74,18 @@ describe("native speech recognition", () => {
     expect(speechRecognition.setPTTState).toHaveBeenLastCalledWith({ held: false });
     expect(result.current.isListening).toBe(false);
   });
+
+  it("explains denied permission and does not start listening", async () => {
+    speechRecognition.requestPermissions.mockResolvedValueOnce({ speechRecognition: "denied" });
+    const { result } = renderHook(() => useSpeechRecognition({ onTranscript: vi.fn() }));
+
+    await waitFor(() => expect(speechRecognition.addListener).toHaveBeenCalledTimes(3));
+    await act(async () => {
+      result.current.start();
+    });
+
+    await waitFor(() => expect(result.current.error).toContain("Android settings"));
+    expect(speechRecognition.start).not.toHaveBeenCalled();
+    expect(result.current.isListening).toBe(false);
+  });
 });
