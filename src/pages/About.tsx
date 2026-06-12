@@ -7,7 +7,7 @@ const About = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto">
+    <div className="app-shell flex min-h-screen w-full min-w-0 max-w-lg flex-col mx-auto">
       <header className="flex items-center gap-3 px-5 pt-6 pb-3">
         <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
           <ArrowLeft className="h-5 w-5" />

@@ -7,9 +7,37 @@ export interface HistoryEntry {
   references: BibleReference[];
   failedSearches?: number;
   source?: "microphone" | "manual";
+  query?: string;
 }
 
 const STORAGE_KEY = "scripture-listener-history";
+const MAX_HISTORY_ENTRIES = 200;
+
+export function createHistoryEntry({
+  query,
+  references,
+  source,
+  duration = 0,
+}: {
+  query: string;
+  references: BibleReference[];
+  source: "microphone" | "manual";
+  duration?: number;
+}): HistoryEntry {
+  return {
+    id: crypto.randomUUID(),
+    date: new Date().toISOString(),
+    duration,
+    references,
+    failedSearches: references.length === 0 ? 1 : 0,
+    source,
+    query: query.trim(),
+  };
+}
+
+export function prependHistoryEntry(entries: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] {
+  return [entry, ...entries].slice(0, MAX_HISTORY_ENTRIES);
+}
 
 export function loadHistory(): HistoryEntry[] {
   if (typeof localStorage === "undefined") return [];

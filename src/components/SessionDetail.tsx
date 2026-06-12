@@ -40,17 +40,17 @@ export function SessionDetail({ entry, onBack }: SessionDetailProps) {
         <span className="text-sm font-medium text-foreground">Session Details</span>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4 flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border border-border bg-card p-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock className="h-4 w-4 text-primary" />
           <span>{date.toLocaleDateString()} · {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
         </div>
-        <div className="w-px h-5 bg-border" />
+        <div className="hidden w-px h-5 bg-border sm:block" />
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <BookMarked className="h-4 w-4 text-primary" />
           <span>{entry.references.length} ref{entry.references.length !== 1 ? "s" : ""}</span>
         </div>
-        <div className="w-px h-5 bg-border" />
+        <div className="hidden w-px h-5 bg-border sm:block" />
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Clock className="h-4 w-4 text-primary" />
           <span>{formatDuration(entry.duration)}</span>

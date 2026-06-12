@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, LogOut, User } from "lucide-react";
+import { ArrowLeft, BookMarked, CheckCircle2, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ const Profile = () => {
 
   const history = loadHistory();
   const totalRefs = history.reduce((sum, e) => sum + e.references.length, 0);
+  const successfulSearches = history.filter((entry) => entry.references.length > 0);
   const badges = getBadges(totalRefs);
   const currentTitle = getCurrentTitle(totalRefs);
 
@@ -74,7 +75,7 @@ const Profile = () => {
     : "?";
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto px-5 py-6">
+    <div className="app-shell flex min-h-screen w-full min-w-0 max-w-lg flex-col mx-auto px-4 py-6 sm:px-5">
       <button onClick={() => navigate("/")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" /> Back
       </button>
@@ -89,14 +90,16 @@ const Profile = () => {
         <div className="text-center">
           <p className="font-serif text-lg font-semibold text-foreground">{displayName || "User"}</p>
           <p className="text-sm text-primary font-medium">{currentTitle}</p>
-          <p className="text-xs text-muted-foreground mt-1">{totalRefs} total references found</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {successfulSearches.length} successful searches · {totalRefs} references found
+          </p>
         </div>
       </div>
 
       {/* Edit name */}
       <div className="space-y-2 mb-8">
         <Label htmlFor="displayName">Display Name</Label>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Input
             id="displayName"
             value={displayName}
@@ -107,6 +110,37 @@ const Profile = () => {
           </Button>
         </div>
       </div>
+
+      <div className="mb-8 grid grid-cols-2 gap-3">
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <CheckCircle2 className="mx-auto mb-1 h-4 w-4 text-primary" />
+          <p className="text-xl font-semibold">{successfulSearches.length}</p>
+          <p className="text-[10px] text-muted-foreground">Successful searches</p>
+        </div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <BookMarked className="mx-auto mb-1 h-4 w-4 text-primary" />
+          <p className="text-xl font-semibold">{totalRefs}</p>
+          <p className="text-[10px] text-muted-foreground">References found</p>
+        </div>
+      </div>
+
+      {successfulSearches.length > 0 && (
+        <div className="mb-8">
+          <h2 className="font-serif text-base font-semibold text-foreground mb-3">Recent Successful Searches</h2>
+          <div className="space-y-2">
+            {successfulSearches.slice(0, 5).map((entry) => (
+              <div key={entry.id} className="min-w-0 rounded-lg border border-border bg-card p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="truncate text-xs text-muted-foreground">
+                    {entry.query || `${entry.references[0].book} ${entry.references[0].chapter}:${entry.references[0].verseStart}`}
+                  </p>
+                  <span className="shrink-0 text-xs text-primary">{entry.references.length} found</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Badge Gallery */}
       <h2 className="font-serif text-base font-semibold text-foreground mb-3">Badges</h2>

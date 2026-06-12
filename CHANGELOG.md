@@ -2,6 +2,13 @@
 
 ## 2026-06-12
 
+### fix(mobile): retain listening and persist every search
+
+- Kept Android speech recognition active across normal silence boundaries until the user stops it.
+- Recorded every microphone and manual lookup immediately in history.
+- Added successful-search totals and recent successful searches to the user profile.
+- Removed narrow-screen overflow and added Android safe-area layout support.
+
 ### fix(android): allow native WebView Edge Function requests
 
 - Added explicit CORS support for Vercel and Capacitor Android origins.

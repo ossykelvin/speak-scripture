@@ -19,6 +19,7 @@ export function useSpeechRecognition({ onTranscript, continuous = true }: UseSpe
   const nativeListenersRef = useRef<PluginListenerHandle[]>([]);
   const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const shouldRestartRef = useRef(false);
+  const nativeSessionActiveRef = useRef(false);
   const onTranscriptRef = useRef(onTranscript);
   onTranscriptRef.current = onTranscript;
 
@@ -50,16 +51,31 @@ export function useSpeechRecognition({ onTranscript, continuous = true }: UseSpe
     });
     void Promise.all([
       SpeechRecognition.addListener("partialResults", (event) => {
-        nativeTranscriptRef.current = event.accumulatedText ?? event.matches?.[0] ?? event.accumulated ?? "";
+        const currentSegment = event.matches?.[0] ?? "";
+        if (event.isRestarting && currentSegment.trim()) {
+          onTranscriptRef.current(currentSegment.trim());
+          nativeTranscriptRef.current = "";
+          return;
+        }
+        nativeTranscriptRef.current = currentSegment;
       }),
       SpeechRecognition.addListener("listeningState", (event) => {
         if (event.state === "started" || event.status === "started") setIsListening(true);
         if (event.state === "stopped" || event.status === "stopped") {
           flushTranscript();
-          setIsListening(false);
+          if (!nativeSessionActiveRef.current) {
+            setIsListening(false);
+          }
         }
       }),
       SpeechRecognition.addListener("error", (event) => {
+        if (
+          nativeSessionActiveRef.current
+          && (event.code === "NO_MATCH" || event.code === "SPEECH_TIMEOUT")
+        ) {
+          return;
+        }
+        nativeSessionActiveRef.current = false;
         setError(`${event.message}. You can continue with manual text input.`);
         setIsListening(false);
       }),
@@ -144,15 +160,20 @@ export function useSpeechRecognition({ onTranscript, continuous = true }: UseSpe
           return;
         }
         nativeTranscriptRef.current = "";
+        nativeSessionActiveRef.current = true;
+        await SpeechRecognition.setPTTState({ held: true });
         await SpeechRecognition.start({
           language: "en-US",
           maxResults: 3,
           partialResults: true,
           popup: false,
           allowForSilence: 3000,
+          continuousPTT: true,
         });
         setIsListening(true);
       } catch (nativeError) {
+        nativeSessionActiveRef.current = false;
+        await SpeechRecognition.setPTTState({ held: false }).catch(() => undefined);
         setError(nativeError instanceof Error ? nativeError.message : "Unable to start native speech recognition.");
         setIsListening(false);
       }
@@ -162,7 +183,9 @@ export function useSpeechRecognition({ onTranscript, continuous = true }: UseSpe
   const stop = useCallback(() => {
     shouldRestartRef.current = false;
     if (isNative) {
-      void SpeechRecognition.forceStop()
+      nativeSessionActiveRef.current = false;
+      void SpeechRecognition.setPTTState({ held: false })
+        .then(() => SpeechRecognition.forceStop())
         .catch((nativeError) => console.error("Unable to stop native speech recognition:", nativeError))
         .finally(() => {
           flushTranscript();
@@ -186,9 +209,12 @@ export function useSpeechRecognition({ onTranscript, continuous = true }: UseSpe
 
   useEffect(() => () => {
     shouldRestartRef.current = false;
+    nativeSessionActiveRef.current = false;
     clearTimer();
     if (isNative) {
-      void SpeechRecognition.forceStop().catch(() => undefined);
+      void SpeechRecognition.setPTTState({ held: false })
+        .then(() => SpeechRecognition.forceStop())
+        .catch(() => undefined);
       return;
     }
     const recognition = recognitionRef.current;

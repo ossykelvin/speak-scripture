@@ -25,7 +25,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SessionDetail } from "@/components/SessionDetail";
-import { loadHistory, saveHistory, type HistoryEntry } from "@/lib/history";
+import {
+  createHistoryEntry,
+  loadHistory,
+  prependHistoryEntry,
+  saveHistory,
+  type HistoryEntry,
+} from "@/lib/history";
 import { useTheme } from "@/hooks/use-theme";
 import { appConfig } from "@/config";
 
@@ -116,16 +122,11 @@ const Index = () => {
         setLookupMessage("No scripture reference was found. Try including a book, chapter, and verse.");
         if (source === "microphone") {
           failedSearchesThisSession.current += 1;
-        } else {
-          setHistory((previous) => [{
-            id: crypto.randomUUID(),
-            date: new Date().toISOString(),
-            duration: 0,
-            references: [],
-            failedSearches: 1,
-            source,
-          }, ...previous]);
         }
+        setHistory((previous) => prependHistoryEntry(
+          previous,
+          createHistoryEntry({ query: cleanText, references: [], source }),
+        ));
         return;
       }
 
@@ -137,15 +138,14 @@ const Index = () => {
 
       if (source === "microphone") {
         refsFoundThisSession.current += completeReferences.length;
-      } else {
-        setHistory((previous) => [{
-          id: crypto.randomUUID(),
-          date: new Date().toISOString(),
-          duration: 0,
-          references: completeReferences,
-          failedSearches: 0,
-          source,
-        }, ...previous]);
+      }
+
+      setHistory((previous) => prependHistoryEntry(
+        previous,
+        createHistoryEntry({ query: cleanText, references: completeReferences, source }),
+      ));
+
+      if (source === "manual") {
         setManualText("");
       }
     } catch (error) {
@@ -187,20 +187,6 @@ const Index = () => {
     };
     setSummary(sessionSummary);
 
-    setReferences((currentReferences) => {
-      if (currentReferences.length > 0 || sessionSummary.failedSearches > 0) {
-        setHistory((previous) => [{
-          id: crypto.randomUUID(),
-          date: new Date().toISOString(),
-          duration: elapsed,
-          references: [...currentReferences],
-          failedSearches: sessionSummary.failedSearches,
-          source: "microphone",
-        }, ...previous]);
-      }
-      return currentReferences;
-    });
-
     listenStartRef.current = null;
   }, [stop]);
 
@@ -223,15 +209,15 @@ const Index = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col max-w-lg mx-auto">
-      <header className="flex items-center justify-between px-5 pt-6 pb-3">
-        <div className="flex items-center gap-2">
+    <div className="app-shell flex min-h-screen w-full min-w-0 max-w-lg flex-col mx-auto">
+      <header className="flex min-w-0 items-center justify-between gap-2 px-4 pt-6 pb-3 sm:px-5">
+        <div className="flex min-w-0 items-center gap-2">
           <BookOpen className="h-5 w-5 text-primary" />
-          <h1 className="font-serif text-lg font-semibold text-foreground tracking-wide">
+          <h1 className="truncate font-serif text-base font-semibold text-foreground tracking-wide sm:text-lg">
             {appConfig.appName}
           </h1>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           {references.length > 0 && (
             <button onClick={clearAll} aria-label="Clear references" className="text-muted-foreground hover:text-foreground">
               <Trash2 className="h-4 w-4" />
@@ -315,7 +301,7 @@ const Index = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mx-4 mb-4 rounded-lg border border-border bg-card/60 p-4 flex flex-wrap items-center gap-4"
+            className="mx-4 mb-4 rounded-lg border border-border bg-card/60 p-4 flex flex-wrap items-center gap-x-4 gap-y-2"
           >
             <span className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4 text-primary" /> {formatDuration(summary.duration)}
@@ -336,7 +322,7 @@ const Index = () => {
           <TabsTrigger value="history" className="flex-1">History</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="live" className="flex-1 space-y-3 overflow-y-auto mt-3">
+        <TabsContent value="live" className="min-w-0 flex-1 space-y-3 overflow-y-auto mt-3">
           {references.length === 0 ? (
             <div className="text-center pt-10 space-y-2">
               <p className="text-muted-foreground text-sm">No references detected yet</p>
@@ -361,7 +347,7 @@ const Index = () => {
           )}
         </TabsContent>
 
-        <TabsContent value="history" className="flex-1 space-y-3 overflow-y-auto mt-3">
+        <TabsContent value="history" className="min-w-0 flex-1 space-y-3 overflow-y-auto mt-3">
           <AnimatePresence mode="wait">
             {selectedSession ? (
               <SessionDetail key="detail" entry={selectedSession} onBack={() => setSelectedSession(null)} />
@@ -389,6 +375,11 @@ const Index = () => {
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
+                      {entry.query && (
+                        <p className="line-clamp-2 break-words text-xs text-muted-foreground">
+                          {entry.query}
+                        </p>
+                      )}
                       {entry.references.length > 0 ? (
                         <div className="flex flex-wrap gap-1.5">
                           {entry.references.map((reference) => (

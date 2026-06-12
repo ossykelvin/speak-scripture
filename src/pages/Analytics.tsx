@@ -35,7 +35,7 @@ const Analytics = () => {
   const badgeProgress = useMemo(() => getBadgeProgress(totalAllTime), [totalAllTime]);
 
   return (
-    <div className="flex flex-col min-h-screen max-w-lg mx-auto">
+    <div className="app-shell flex min-h-screen w-full min-w-0 max-w-lg flex-col mx-auto">
       <header className="flex items-center gap-3 px-5 pt-6 pb-3">
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate("/")}>
           <ArrowLeft className="h-4 w-4" />
@@ -82,7 +82,7 @@ const Analytics = () => {
 
         <AnimatePresence mode="wait">
           <TabsContent value={period} className="mt-4 space-y-4" key={period}>
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-4 gap-2">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Stat icon={<BookMarked className="h-4 w-4" />} value={stats.totalReferences} label="Found" />
               <Stat icon={<XCircle className="h-4 w-4" />} value={stats.failedSearches} label="No match" />
               <Stat icon={<Clock className="h-4 w-4" />} value={formatDuration(stats.totalDuration)} label="Listening" />

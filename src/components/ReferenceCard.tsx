@@ -18,7 +18,7 @@ export function ReferenceCard({ reference, index, onRemove }: ReferenceCardProps
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -100 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-card border border-border rounded-lg p-4 relative group"
+      className="relative min-w-0 overflow-hidden rounded-lg border border-border bg-card p-4 group"
     >
       <div className="absolute top-2 right-2 flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
         <button
@@ -42,15 +42,15 @@ export function ReferenceCard({ reference, index, onRemove }: ReferenceCardProps
           <BookOpen className="h-4 w-4 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-serif text-sm font-semibold text-primary">
+          <div className="mb-1 flex flex-wrap items-center gap-2 pr-10">
+            <h3 className="break-words font-serif text-sm font-semibold text-primary">
               {formatBibleReference(reference)}
             </h3>
             <span className="text-[10px] font-sans font-medium uppercase tracking-wider bg-primary/15 text-primary px-1.5 py-0.5 rounded">
               {reference.version}
             </span>
           </div>
-          <p className="text-sm text-secondary-foreground leading-relaxed italic">
+          <p className="break-words text-sm text-secondary-foreground leading-relaxed italic">
             {reference.verseText || "Loading..."}
           </p>
         </div>
