@@ -143,11 +143,11 @@ Build warnings:
 | Stability | Repeated input guard | Code review | Pass | Submit controls disable during processing |
 | Stability | Listener cleanup | Automated/code review | Pass | Native listeners and microphone are cleaned up |
 | Stability | Critical console errors | Browser | Pass | None during viewport/navigation checks |
-| Performance | APK size | Artifact inspection | Pass | 5,549,795 bytes |
+| Performance | APK size | Artifact inspection | Pass | 5,549,991 bytes |
 | Performance | Recursive APK packaging | Artifact inspection | Pass | Zero nested APK entries |
 | Android | Capacitor `webDir` | Code review | Pass | `dist` |
 | Android | Web assets copied | Capacitor sync/APK inspection | Pass | Assets present |
-| Android | Gradle debug build | GitHub Actions | Pass | Run `27411169114` |
+| Android | Gradle debug build | GitHub Actions | Pass | Run `27411817330` |
 | Android | Manifest permissions | Source/plugin review | Pass | INTERNET and RECORD_AUDIO only |
 | Android | Versioning | Gradle review | Pass | 2 / 1.1.0 |
 
@@ -197,10 +197,10 @@ Build warnings:
 | Item | Value |
 | --- | --- |
 | Build type | Debug APK |
-| Android CI run | `27411169114` |
+| Android CI run | `27411817330` |
 | Local repository path | `public/downloads/Speak-Scripture-v1.0-debug.apk` |
-| Size | 5,549,795 bytes |
-| SHA-256 | `3E4153AE5375585631B71CDB88CAD6C0E71BE8DEE436038B4B5CDFA587A84201` |
+| Size | 5,549,991 bytes |
+| SHA-256 | `455CA206D1A1E630BC6D1FA5469D1C1159D72CCC2644717FB8E0E9755894FBE3` |
 | Nested APK entries | 0 |
 | Version | 1.1.0 |
 | Version code | 2 |
