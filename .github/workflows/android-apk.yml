@@ -8,6 +8,7 @@ on:
     paths:
       - "android/**"
       - "public/**"
+      - "!public/downloads/**"
       - "src/**"
       - "capacitor.config.ts"
       - "package.json"

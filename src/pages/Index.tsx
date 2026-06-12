@@ -150,7 +150,12 @@ const Index = () => {
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to process this text";
-      setLookupMessage("Scripture detection is temporarily unavailable. Please try again.");
+      const isFunctionTransportError = message.toLowerCase().includes("failed to send a request");
+      setLookupMessage(
+        isFunctionTransportError
+          ? "Unable to reach scripture detection. Check your internet connection and try again."
+          : "Scripture detection is temporarily unavailable. Please try again.",
+      );
       toast({ title: "Scripture lookup failed", description: message, variant: "destructive" });
     } finally {
       setIsProcessing(false);

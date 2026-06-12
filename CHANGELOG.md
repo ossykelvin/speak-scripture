@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-06-12
+
+### fix(android): allow native WebView Edge Function requests
+
+- Added explicit CORS support for Vercel and Capacitor Android origins.
+- Echoes only trusted request origins and varies responses by `Origin`.
+- Added clearer client guidance for Edge Function transport failures.
+
 ## 2026-06-11
 
 ### design(branding): replace Lovable icon assets

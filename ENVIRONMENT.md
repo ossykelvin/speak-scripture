@@ -32,10 +32,11 @@ Set these in Supabase, not Vercel browser variables:
 npx supabase secrets set LOVABLE_API_KEY="..."
 npx supabase secrets set AI_GATEWAY_URL="https://ai.gateway.lovable.dev/v1/chat/completions"
 npx supabase secrets set AI_MODEL="google/gemini-2.5-flash"
-npx supabase secrets set ALLOWED_ORIGIN="https://your-domain.example"
+npx supabase secrets set ALLOWED_ORIGINS="https://your-domain.example,https://localhost,capacitor://localhost,http://localhost"
 ```
 
-`ALLOWED_ORIGIN="*"` is acceptable for local testing but a production domain is preferred.
+Include the Vercel production origin plus Capacitor's native WebView origins. `*` is
+acceptable for local testing but an explicit production allowlist is preferred.
 
 When migrating between Supabase projects before a new provider key is available, the Edge
 Function can temporarily forward extraction requests to the previous function:
