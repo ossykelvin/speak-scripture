@@ -8,6 +8,7 @@
 - Kept user-scoped localStorage for offline access and fast startup.
 - Merges guest, device, and cloud history on sign-in without duplicating searches.
 - Shows cloud synchronization status on Home and Profile.
+- Records successful local-history imports and sync counts on the user's profile.
 
 ### fix(mobile): retain listening and persist every search
 

@@ -37,6 +37,20 @@ const HistoryContext = createContext<HistoryContextValue>({
 
 export const useHistory = () => useContext(HistoryContext);
 
+async function recordProfileHistorySync(
+  userId: string,
+  entryCount: number,
+  markMigrated = false,
+) {
+  const syncedAt = new Date().toISOString();
+  return supabase.from("profiles").upsert({
+    user_id: userId,
+    history_entry_count: entryCount,
+    last_history_sync_at: syncedAt,
+    ...(markMigrated ? { history_migrated_at: syncedAt } : {}),
+  }, { onConflict: "user_id" });
+}
+
 export function HistoryProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [history, setHistory] = useState<HistoryEntry[]>(() => loadHistory());
@@ -104,6 +118,19 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      const { error: profileSyncError } = await recordProfileHistorySync(
+        userId,
+        merged.length,
+        guestHistory.length > 0,
+      );
+
+      if (cancelled) return;
+      if (profileSyncError) {
+        setSyncError("History was uploaded, but the profile sync status could not be updated.");
+        setSyncing(false);
+        return;
+      }
+
       clearGuestHistory();
       setSyncing(false);
     })();
@@ -115,23 +142,25 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
 
   const addHistoryEntry = useCallback((entry: HistoryEntry) => {
     const userId = activeUserRef.current;
-    setHistory((previous) => {
-      const next = mergeHistory([entry], previous);
-      historyRef.current = next;
-      saveHistory(next, userId);
-      return next;
-    });
+    const next = mergeHistory([entry], historyRef.current);
+    historyRef.current = next;
+    setHistory(next);
+    saveHistory(next, userId);
 
     if (!userId) return;
     void supabase
       .from("search_history")
       .upsert(historyEntryToRemote(entry, userId), { onConflict: "id" })
-      .then(({ error }) => {
+      .then(async ({ error }) => {
         if (error) {
           setSyncError("This search is saved locally and will sync when cloud storage is available.");
-        } else {
-          setSyncError(null);
+          return;
         }
+
+        const { error: profileSyncError } = await recordProfileHistorySync(userId, next.length);
+        setSyncError(profileSyncError
+          ? "This search was uploaded, but the profile sync status could not be updated."
+          : null);
       });
   }, []);
 

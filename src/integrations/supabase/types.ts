@@ -19,7 +19,10 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           display_name: string | null
+          history_entry_count: number
+          history_migrated_at: string | null
           id: string
+          last_history_sync_at: string | null
           updated_at: string
           user_id: string
         }
@@ -27,7 +30,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          history_entry_count?: number
+          history_migrated_at?: string | null
           id?: string
+          last_history_sync_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -35,7 +41,10 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           display_name?: string | null
+          history_entry_count?: number
+          history_migrated_at?: string | null
           id?: string
+          last_history_sync_at?: string | null
           updated_at?: string
           user_id?: string
         }
