@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
+import { appConfig } from "@/config";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -76,7 +77,7 @@ const Auth = () => {
         <div className="text-center space-y-2">
           <BookOpen className="h-10 w-10 text-primary mx-auto" />
           <h1 className="font-serif text-2xl font-semibold text-foreground">
-            Scripture Listener
+            {appConfig.appName}
           </h1>
           <p className="text-sm text-muted-foreground">
             {isLogin ? "Sign in to your account" : "Create an account"}
@@ -114,7 +115,7 @@ const Auth = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Enter your password"
               required
               minLength={6}
             />

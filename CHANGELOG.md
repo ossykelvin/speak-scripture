@@ -13,6 +13,7 @@
 - Disabled Android backup for locally stored conversation history.
 - Added configurable request timeouts for scripture detection and verse retrieval.
 - Advanced Android and About-screen version metadata to `1.1.0` (`versionCode 2`).
+- Aligned authentication branding and replaced the malformed password placeholder.
 
 ### fix(android): allow native WebView Edge Function requests
 
