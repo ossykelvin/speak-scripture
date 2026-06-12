@@ -2,6 +2,13 @@
 
 ## 2026-06-12
 
+### feat(history): sync progress across signed-in devices
+
+- Added an RLS-protected Supabase search history table tied to authenticated users.
+- Kept user-scoped localStorage for offline access and fast startup.
+- Merges guest, device, and cloud history on sign-in without duplicating searches.
+- Shows cloud synchronization status on Home and Profile.
+
 ### fix(mobile): retain listening and persist every search
 
 - Kept Android speech recognition active across normal silence boundaries until the user stops it.

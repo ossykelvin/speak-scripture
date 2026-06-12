@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getBadges, getCurrentTitle } from "@/lib/badges";
-import { loadHistory } from "@/lib/history";
 import { useToast } from "@/components/ui/use-toast";
+import { useHistory } from "@/hooks/use-history";
 
 const Profile = () => {
   const { user, signOut, loading: authLoading } = useAuth();
@@ -19,7 +19,7 @@ const Profile = () => {
   const [displayName, setDisplayName] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const history = loadHistory();
+  const { history, syncing, syncError } = useHistory();
   const totalRefs = history.reduce((sum, e) => sum + e.references.length, 0);
   const successfulSearches = history.filter((entry) => entry.references.length > 0);
   const badges = getBadges(totalRefs);
@@ -92,6 +92,9 @@ const Profile = () => {
           <p className="text-sm text-primary font-medium">{currentTitle}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {successfulSearches.length} successful searches · {totalRefs} references found
+          </p>
+          <p className={`mt-1 text-[11px] ${syncError ? "text-destructive" : "text-muted-foreground"}`}>
+            {syncError ?? (syncing ? "Syncing progress..." : "Progress saved locally and to your profile")}
           </p>
         </div>
       </div>

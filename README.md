@@ -1,6 +1,6 @@
 # Speak Scripture
 
-Speak Scripture listens to speech or accepts typed text, detects explicit Bible references and familiar scripture quotations, then displays the normalized reference and complete verse text. Local history powers search analytics and configurable badge progress.
+Speak Scripture listens to speech or accepts typed text, detects explicit Bible references and familiar scripture quotations, then displays the normalized reference and complete verse text. Local and account-synced history power search analytics and configurable badge progress.
 
 ## Stack
 
@@ -17,7 +17,7 @@ Speak Scripture listens to speech or accepts typed text, detects explicit Bible 
 - Routes: `/`, `/about`, `/analytics`, `/auth`, `/profile`
 - State: React component/context state; no external global state store
 - Auth/profile storage: Supabase
-- Search history/analytics/badges: browser or WebView `localStorage`
+- Search history/analytics/badges: user-scoped `localStorage` plus Supabase for signed-in users
 - Reference detection: Supabase Edge Function calling a configured AI gateway
 - Verse lookup: configurable public Bible API base URL
 - Badge thresholds: `VITE_BADGE_THRESHOLDS`, parsed by `src/config`
@@ -57,4 +57,4 @@ The generated native project is in `android/`. Build and sync the web app with `
 
 ## Current Data Model
 
-Authentication and profile names are cloud-backed. Search history, counts, failures, analytics, and badges remain device-local. Moving those records to Supabase is the next step for cross-device history and account-level reporting.
+Authentication, profile names, and signed-in search history are cloud-backed. Search history is also cached locally for responsive and offline-friendly access. Guest history remains local and is merged into the user's profile after a successful sign-in and cloud sync.

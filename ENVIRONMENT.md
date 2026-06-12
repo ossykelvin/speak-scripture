@@ -13,7 +13,7 @@ Copy `.env.example` to `.env.local` for local development. Add the same public `
 | `VITE_DEFAULT_BIBLE_TRANSLATION` | No | Translation code used for verse lookup. Defaults to `kjv`. |
 | `VITE_ANALYTICS_ENABLED` | No | Shows or hides the analytics navigation action. |
 | `VITE_BADGE_THRESHOLDS` | No | Six ascending comma-separated positive integers. |
-| `VITE_STORAGE_PROVIDER` | No | Documents the active history provider. Currently only `localStorage` is implemented. |
+| `VITE_STORAGE_PROVIDER` | No | Documents the active history provider. The app uses localStorage plus profile-linked Supabase sync. |
 | `VITE_REFERENCE_FUNCTION_NAME` | No | Supabase Edge Function name. Defaults to `extract-references`. |
 | `VITE_REQUEST_TIMEOUT_MS` | No | Positive request timeout in milliseconds. Defaults to `15000`. |
 | `VITE_SUPABASE_URL` | Yes | Supabase project URL. |

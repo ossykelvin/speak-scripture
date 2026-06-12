@@ -139,7 +139,7 @@ Build warnings:
 | Security | Public browser key handling | Static review | Pass | Publishable key is intentionally public |
 | Privacy | Microphone disclosure | Browser/code review | Pass | About screen explains on-demand access |
 | Privacy | Conversation history backup | Manifest inspection | Pass | Android backup disabled |
-| Privacy | Local history storage | Code review | Accepted Risk | Search text remains in app-local localStorage |
+| Privacy | Local and profile history storage | Code review | Accepted Risk | Search text is cached locally and synced to the signed-in user's Supabase profile |
 | Stability | Repeated input guard | Code review | Pass | Submit controls disable during processing |
 | Stability | Listener cleanup | Automated/code review | Pass | Native listeners and microphone are cleaned up |
 | Stability | Critical console errors | Browser | Pass | None during viewport/navigation checks |
@@ -178,11 +178,12 @@ Build warnings:
 8. Advanced Android/app version metadata.
 9. Corrected Auth branding and password placeholder.
 10. Added automated tests for timeout config, stalled requests, and denied microphone permission.
+11. Added user-scoped local history plus Supabase synchronization protected by row-level security.
 
 ## Retest Results
 
 - TypeScript: pass.
-- Unit/component tests: 14/14 pass.
+- Unit/component tests: 16/16 pass.
 - Production web build: pass.
 - Capacitor Android sync: pass.
 - Android Gradle CI: pass.
@@ -217,9 +218,10 @@ state were inspected at 320x568, 390x844, 412x915, and 800x360.
 1. Real-device installation, launch, microphone quality, permission dialogs, background/resume,
    rotation transitions, and process-death recovery remain untested.
 2. Native Google OAuth and email confirmation callback handling is not release-ready.
-3. History is local to one app installation and is not synchronized to Supabase across devices.
-4. Local history contains user search/spoken text. Android backup is disabled, but app-local
-   storage is still readable by the app and should be covered by a user-facing retention policy.
+3. Signed-in history is synchronized to Supabase at sign-in/app launch and after each search;
+   it does not currently use real-time subscriptions while the same account is open on two devices.
+4. History contains user search/spoken text. Android backup is disabled, but the local cache and
+   account-level cloud records should be covered by a user-facing retention policy.
 5. Invalid reference bounds are not validated before calling the Bible API.
 6. The current artifact is debug-signed, not production-signed.
 7. The primary JavaScript bundle should be split before lower-end-device performance certification.
@@ -232,7 +234,7 @@ state were inspected at 320x568, 390x844, 412x915, and 800x360.
 3. Test Allow, Deny, and Don't Ask Again microphone paths on-device.
 4. Test live speech in quiet, noisy, long-silence, and repeated-session conditions.
 5. Add canonical Bible book/chapter/verse bounds validation.
-6. Decide whether authenticated history should sync to Supabase with explicit privacy controls.
+6. Add explicit history retention and deletion controls for signed-in users.
 7. Add release signing and AAB generation in CI.
 8. Move environment-specific public CI values to GitHub repository variables.
 9. Add route-level lazy loading and rerun startup profiling on a low-memory Android device.

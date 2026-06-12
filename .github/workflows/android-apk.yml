@@ -58,7 +58,7 @@ jobs:
           VITE_DEFAULT_BIBLE_TRANSLATION: kjv
           VITE_ANALYTICS_ENABLED: "true"
           VITE_BADGE_THRESHOLDS: 1,10,25,50,100,250
-          VITE_STORAGE_PROVIDER: localStorage
+          VITE_STORAGE_PROVIDER: localStorage+supabase
           VITE_REFERENCE_FUNCTION_NAME: extract-references
           VITE_SUPABASE_PROJECT_ID: glyrspieyqcbdrwbwlir
           VITE_SUPABASE_URL: https://glyrspieyqcbdrwbwlir.supabase.co

@@ -6,9 +6,9 @@ import { ArrowLeft, BarChart3, BookMarked, CheckCircle2, Clock, Trophy, XCircle 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { loadHistory } from "@/lib/history";
 import { computeAnalytics, type Period } from "@/lib/analytics";
 import { getBadgeProgress, getBadges, getCurrentTitle } from "@/lib/badges";
+import { useHistory } from "@/hooks/use-history";
 
 const formatDuration = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
@@ -20,7 +20,7 @@ const formatDuration = (seconds: number) => {
 const Analytics = () => {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<Period>("daily");
-  const history = useMemo(() => loadHistory(), []);
+  const { history } = useHistory();
   const stats = useMemo(() => computeAnalytics(history, period), [history, period]);
   const totalAllTime = useMemo(
     () => history.reduce((sum, entry) => sum + entry.references.length, 0),

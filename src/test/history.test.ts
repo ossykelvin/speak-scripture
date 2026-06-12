@@ -1,5 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
-import { createHistoryEntry, prependHistoryEntry, type HistoryEntry } from "@/lib/history";
+import {
+  createHistoryEntry,
+  getHistoryStorageKey,
+  historyEntryToRemote,
+  mergeHistory,
+  prependHistoryEntry,
+  remoteRowToHistoryEntry,
+  type HistoryEntry,
+} from "@/lib/history";
 import type { BibleReference } from "@/lib/bible";
 
 const reference: BibleReference = {
@@ -45,5 +53,35 @@ describe("history entries", () => {
       "older",
     ]);
     expect(entry.failedSearches).toBe(1);
+  });
+
+  it("merges device and cloud history by id in newest-first order", () => {
+    const older = {
+      ...createHistoryEntry({ query: "John 3:16", references: [reference], source: "manual" }),
+      id: "older",
+      date: "2026-06-10T10:00:00.000Z",
+    };
+    const newer = {
+      ...older,
+      id: "newer",
+      date: "2026-06-11T10:00:00.000Z",
+    };
+
+    expect(mergeHistory([older], [newer, older]).map((entry) => entry.id)).toEqual(["newer", "older"]);
+  });
+
+  it("uses isolated local keys and round-trips Supabase rows", () => {
+    const entry = {
+      ...createHistoryEntry({ query: "John 3:16", references: [reference], source: "manual" }),
+      id: "00000000-0000-4000-8000-000000000003",
+    };
+    const remote = historyEntryToRemote(entry, "user-1");
+
+    expect(getHistoryStorageKey()).toBe("scripture-listener-history");
+    expect(getHistoryStorageKey("user-1")).toBe("scripture-listener-history:user-1");
+    expect(remoteRowToHistoryEntry({
+      ...remote,
+      failed_searches: remote.failed_searches,
+    })).toEqual(entry);
   });
 });

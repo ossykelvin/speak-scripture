@@ -41,6 +41,45 @@ export type Database = {
         }
         Relationships: []
       }
+      search_history: {
+        Row: {
+          created_at: string
+          duration: number
+          failed_searches: number
+          id: string
+          query: string | null
+          scripture_references: Json
+          searched_at: string
+          source: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration?: number
+          failed_searches?: number
+          id: string
+          query?: string | null
+          scripture_references?: Json
+          searched_at: string
+          source?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration?: number
+          failed_searches?: number
+          id?: string
+          query?: string | null
+          scripture_references?: Json
+          searched_at?: string
+          source?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

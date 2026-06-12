@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
@@ -27,11 +27,10 @@ import { Button } from "@/components/ui/button";
 import { SessionDetail } from "@/components/SessionDetail";
 import {
   createHistoryEntry,
-  loadHistory,
-  prependHistoryEntry,
-  saveHistory,
   type HistoryEntry,
 } from "@/lib/history";
+import { useHistory } from "@/hooks/use-history";
+import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
 import { appConfig } from "@/config";
 import { withTimeout } from "@/lib/async";
@@ -64,18 +63,15 @@ const Index = () => {
   const [manualText, setManualText] = useState("");
   const [lookupMessage, setLookupMessage] = useState<string | null>(null);
   const [summary, setSummary] = useState<SessionSummary | null>(null);
-  const [history, setHistory] = useState<HistoryEntry[]>(() => loadHistory());
   const [selectedSession, setSelectedSession] = useState<HistoryEntry | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { theme, toggle: toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const { history, addHistoryEntry, syncing: historySyncing, syncError } = useHistory();
   const listenStartRef = useRef<number | null>(null);
   const refsFoundThisSession = useRef(0);
   const failedSearchesThisSession = useRef(0);
-
-  useEffect(() => {
-    saveHistory(history);
-  }, [history]);
 
   const processText = useCallback(async (text: string, source: "microphone" | "manual") => {
     const cleanText = text.trim();
@@ -127,10 +123,7 @@ const Index = () => {
         if (source === "microphone") {
           failedSearchesThisSession.current += 1;
         }
-        setHistory((previous) => prependHistoryEntry(
-          previous,
-          createHistoryEntry({ query: cleanText, references: [], source }),
-        ));
+        addHistoryEntry(createHistoryEntry({ query: cleanText, references: [], source }));
         return;
       }
 
@@ -144,10 +137,7 @@ const Index = () => {
         refsFoundThisSession.current += completeReferences.length;
       }
 
-      setHistory((previous) => prependHistoryEntry(
-        previous,
-        createHistoryEntry({ query: cleanText, references: completeReferences, source }),
-      ));
+      addHistoryEntry(createHistoryEntry({ query: cleanText, references: completeReferences, source }));
 
       if (source === "manual") {
         setManualText("");
@@ -167,7 +157,7 @@ const Index = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [toast]);
+  }, [addHistoryEntry, toast]);
 
   const {
     isListening,
@@ -318,6 +308,11 @@ const Index = () => {
         {lookupMessage && (
           <p className="w-full rounded-lg border border-border bg-muted/30 p-3 text-center text-sm text-muted-foreground">
             {lookupMessage}
+          </p>
+        )}
+        {(historySyncing || syncError) && user && (
+          <p className={`w-full text-center text-xs ${syncError ? "text-destructive" : "text-muted-foreground"}`}>
+            {syncError ?? "Syncing progress with your profile..."}
           </p>
         )}
       </div>
