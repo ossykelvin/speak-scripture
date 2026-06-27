@@ -7,6 +7,7 @@ import {
   mergeHistory,
   prependHistoryEntry,
   remoteRowToHistoryEntry,
+  scriptureHistoryOnly,
   type HistoryEntry,
 } from "@/lib/history";
 import type { BibleReference } from "@/lib/bible";
@@ -40,7 +41,7 @@ describe("history entries", () => {
     });
   });
 
-  it("records no-match searches and prepends new searches", () => {
+  it("marks no-match searches but filters them out of scripture history", () => {
     vi.spyOn(crypto, "randomUUID").mockReturnValue("00000000-0000-4000-8000-000000000002");
     const entry = createHistoryEntry({
       query: "unmatched words",
@@ -54,6 +55,7 @@ describe("history entries", () => {
       "older",
     ]);
     expect(entry.failedSearches).toBe(1);
+    expect(scriptureHistoryOnly([entry])).toEqual([]);
   });
 
   it("merges device and cloud history by id in newest-first order", () => {

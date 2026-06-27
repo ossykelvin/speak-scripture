@@ -44,9 +44,13 @@ Actions workflow. Open the completed workflow run and download the
 `Speak-Scripture-Android-APK` artifact. The extracted file is named
 `Speak-Scripture-debug.apk`.
 
-The currently published debug APK is also available directly from:
+The currently published debug APK is also available from the stable latest link:
 
-`https://speak-scripture.vercel.app/downloads/Speak-Scripture-v1.0-debug.apk`
+`https://speak-scripture.vercel.app/downloads/Speak-Scripture-latest-debug.apk`
+
+When publishing a new downloadable APK to `public/downloads`, replace
+`Speak-Scripture-latest-debug.apk` with the newest APK so the app download button
+always resolves to the latest build.
 
 SHA-256:
 

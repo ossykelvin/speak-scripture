@@ -8,9 +8,13 @@ const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") ?? Deno.env.get("ALLOWED
 function getCorsHeaders(req: Request) {
   const requestOrigin = req.headers.get("origin");
   const allowAll = allowedOrigins.includes("*");
-  const allowedOrigin = allowAll || (requestOrigin && allowedOrigins.includes(requestOrigin))
+  const isLocalApp = requestOrigin
+    ? /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(requestOrigin)
+      || requestOrigin === "capacitor://localhost"
+    : false;
+  const allowedOrigin = allowAll || isLocalApp || (requestOrigin && allowedOrigins.includes(requestOrigin))
     ? requestOrigin ?? "*"
-    : allowedOrigins[0];
+    : "null";
 
   return {
     "Access-Control-Allow-Origin": allowedOrigin,

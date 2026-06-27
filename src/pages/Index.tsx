@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { lazy, Suspense, useState, useCallback, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   AlertCircle,
@@ -7,10 +7,7 @@ import {
   BookOpen,
   ChevronRight,
   Clock,
-  Info,
-  Moon,
   Search,
-  Sun,
   Trash2,
   UserCircle,
 } from "lucide-react";
@@ -19,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { MicButton } from "@/components/MicButton";
 import { ReferenceCard } from "@/components/ReferenceCard";
-import { fetchVerseText, normalizeBibleReference, type BibleReference } from "@/lib/bible";
+import { fetchVerseText, getDefaultBibleTranslation, normalizeBibleReference, type BibleReference } from "@/lib/bible";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,13 +24,19 @@ import { Button } from "@/components/ui/button";
 import { SessionDetail } from "@/components/SessionDetail";
 import {
   createHistoryEntry,
+  scriptureHistoryOnly,
   type HistoryEntry,
 } from "@/lib/history";
 import { useHistory } from "@/hooks/use-history";
 import { useAuth } from "@/hooks/use-auth";
-import { useTheme } from "@/hooks/use-theme";
 import { appConfig } from "@/config";
 import { withTimeout } from "@/lib/async";
+import { useBibleProvider } from "@/hooks/use-bible-provider";
+import { extractBibleReferencesLocally } from "@/lib/reference-extraction";
+import { getMediaTrackPreview } from "@/lib/media";
+
+const MediaPlayer = lazy(() => import("@/components/MediaPlayer").then((module) => ({ default: module.MediaPlayer })));
+const CommentaryMenu = lazy(() => import("@/components/CommentaryMenu").then((module) => ({ default: module.CommentaryMenu })));
 
 interface SessionSummary {
   duration: number;
@@ -66,9 +69,10 @@ const Index = () => {
   const [selectedSession, setSelectedSession] = useState<HistoryEntry | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { theme, toggle: toggleTheme } = useTheme();
   const { user } = useAuth();
-  const { history, addHistoryEntry, syncing: historySyncing, syncError } = useHistory();
+  const { history, addHistoryEntry, syncing: historySyncing } = useHistory();
+  const scriptureHistory = scriptureHistoryOnly(history);
+  const { provider: bibleProvider } = useBibleProvider();
   const listenStartRef = useRef<number | null>(null);
   const refsFoundThisSession = useRef(0);
   const failedSearchesThisSession = useRef(0);
@@ -82,24 +86,34 @@ const Index = () => {
     setIsProcessing(true);
 
     try {
-      const { data, error } = await withTimeout(
-        supabase.functions.invoke(appConfig.referenceFunctionName, {
-          body: { text: cleanText },
-        }),
-        appConfig.requestTimeoutMs,
-      );
-      if (error) throw error;
+      const localReferences = extractBibleReferencesLocally(cleanText);
+      let extracted: ExtractedReference[] = localReferences;
 
-      const extracted = Array.isArray(data?.references)
-        ? data.references as ExtractedReference[]
-        : [];
+      if (source === "microphone" || localReferences.length === 0) {
+        try {
+          const { data, error } = await withTimeout(
+            supabase.functions.invoke(appConfig.referenceFunctionName, {
+              body: { text: cleanText },
+            }),
+            appConfig.requestTimeoutMs,
+          );
+          if (error) throw error;
+          const remoteReferences = Array.isArray(data?.references)
+            ? data.references as ExtractedReference[]
+            : [];
+          extracted = [...localReferences, ...remoteReferences];
+        } catch (detectionError) {
+          if (localReferences.length === 0) throw detectionError;
+          console.warn("Remote scripture detection unavailable; using local matches.", detectionError);
+        }
+      }
       const uniqueReferences = new Map<string, BibleReference>();
 
       for (const rawReference of extracted) {
         const normalized = normalizeBibleReference(rawReference);
         const reference: BibleReference = {
           ...normalized,
-          version: appConfig.defaultBibleTranslation.toUpperCase(),
+          version: getDefaultBibleTranslation(bibleProvider).toUpperCase(),
           id: crypto.randomUUID(),
         };
         uniqueReferences.set(referenceKey(reference), reference);
@@ -108,7 +122,7 @@ const Index = () => {
       const completeReferences = await Promise.all(
         [...uniqueReferences.values()].map(async (reference) => {
           try {
-            return { ...reference, verseText: await fetchVerseText(reference) };
+            return { ...reference, verseText: await fetchVerseText(reference, undefined, bibleProvider) };
           } catch (verseError) {
             return {
               ...reference,
@@ -123,7 +137,6 @@ const Index = () => {
         if (source === "microphone") {
           failedSearchesThisSession.current += 1;
         }
-        addHistoryEntry(createHistoryEntry({ query: cleanText, references: [], source }));
         return;
       }
 
@@ -157,7 +170,7 @@ const Index = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [addHistoryEntry, toast]);
+  }, [addHistoryEntry, bibleProvider, toast]);
 
   const {
     isListening,
@@ -225,13 +238,6 @@ const Index = () => {
             </button>
           )}
           <button
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
-          >
-            {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-          </button>
-          <button
             onClick={() => navigate("/profile")}
             aria-label="Profile"
             className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
@@ -247,13 +253,6 @@ const Index = () => {
               <BarChart3 className="h-4 w-4" />
             </button>
           )}
-          <button
-            onClick={() => navigate("/about")}
-            aria-label="About"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground hover:bg-accent/10 hover:text-foreground"
-          >
-            <Info className="h-4 w-4" />
-          </button>
         </div>
       </header>
 
@@ -310,9 +309,9 @@ const Index = () => {
             {lookupMessage}
           </p>
         )}
-        {(historySyncing || syncError) && user && (
-          <p className={`w-full text-center text-xs ${syncError ? "text-destructive" : "text-muted-foreground"}`}>
-            {syncError ?? "Syncing progress with your profile..."}
+        {historySyncing && user && (
+          <p className="w-full text-center text-xs text-muted-foreground">
+            Syncing progress quietly in the background...
           </p>
         )}
       </div>
@@ -339,9 +338,11 @@ const Index = () => {
       </AnimatePresence>
 
       <Tabs defaultValue="live" className="flex-1 flex flex-col px-4 pb-8">
-        <TabsList className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="live" className="flex-1">Live</TabsTrigger>
           <TabsTrigger value="history" className="flex-1">History</TabsTrigger>
+          <TabsTrigger value="media" className="flex-1">Media</TabsTrigger>
+          <TabsTrigger value="commentary" className="flex-1 text-xs sm:text-sm">Commentary</TabsTrigger>
         </TabsList>
 
         <TabsContent value="live" className="min-w-0 flex-1 space-y-3 overflow-y-auto mt-3">
@@ -375,13 +376,16 @@ const Index = () => {
               <SessionDetail key="detail" entry={selectedSession} onBack={() => setSelectedSession(null)} />
             ) : (
               <motion.div key="list" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-3">
-                {history.length === 0 ? (
+                {scriptureHistory.length === 0 ? (
                   <div className="text-center pt-10 space-y-2">
                     <p className="text-muted-foreground text-sm">No search history yet</p>
-                    <p className="text-muted-foreground/60 text-xs">Completed searches will appear here.</p>
+                    <p className="text-muted-foreground/60 text-xs">Searches with Bible references will appear here.</p>
                   </div>
-                ) : history.map((entry) => {
+                ) : scriptureHistory.map((entry) => {
                   const date = new Date(entry.date);
+                  const primaryReference = entry.references[0];
+                  const referenceLabel = `${primaryReference.book} ${primaryReference.chapter}:${primaryReference.verseStart}`;
+                  const preview = getMediaTrackPreview(entry);
                   return (
                     <button
                       key={entry.id}
@@ -397,28 +401,39 @@ const Index = () => {
                           <ChevronRight className="h-3.5 w-3.5" />
                         </span>
                       </div>
-                      {entry.query && (
-                        <p className="line-clamp-2 break-words text-xs text-muted-foreground">
-                          {entry.query}
+                      <p className="line-clamp-2 break-words text-sm text-muted-foreground">
+                        {entry.query?.trim() || referenceLabel}
+                      </p>
+                      {preview && (
+                        <p className="line-clamp-2 break-words text-xs leading-relaxed text-muted-foreground">
+                          {preview}
                         </p>
                       )}
-                      {entry.references.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {entry.references.map((reference) => (
-                            <span key={reference.id} className="text-[11px] font-serif bg-primary/10 text-primary px-2 py-0.5 rounded">
-                              {reference.book} {reference.chapter}:{reference.verseStart}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground">No reference matched this search.</p>
-                      )}
+                      <div className="flex flex-wrap gap-1.5">
+                        {entry.references.map((reference) => (
+                          <span key={reference.id} className="text-[11px] font-serif bg-primary/10 text-primary px-2 py-0.5 rounded">
+                            {reference.book} {reference.chapter}:{reference.verseStart}
+                          </span>
+                        ))}
+                      </div>
                     </button>
                   );
                 })}
               </motion.div>
             )}
           </AnimatePresence>
+        </TabsContent>
+
+        <TabsContent value="media" className="min-w-0 flex-1 overflow-y-auto mt-3">
+          <Suspense fallback={<p className="pt-10 text-center text-sm text-muted-foreground">Loading media...</p>}>
+            <MediaPlayer history={scriptureHistory} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="commentary" className="min-w-0 flex-1 overflow-y-auto mt-3">
+          <Suspense fallback={<p className="pt-10 text-center text-sm text-muted-foreground">Loading commentary...</p>}>
+            <CommentaryMenu history={scriptureHistory} />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </div>

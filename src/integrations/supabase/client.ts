@@ -8,10 +8,15 @@ assertPublicConfig();
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(appConfig.supabase.url, appConfig.supabase.publishableKey, {
+export const supabase = createClient<Database, "scripture">(appConfig.supabase.url, appConfig.supabase.publishableKey, {
+  db: {
+    schema: "scripture",
+  },
   auth: {
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
   }
 });
+
+export const scripture = supabase.schema("scripture");

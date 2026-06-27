@@ -12,7 +12,7 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  public: {
+  scripture: {
     Tables: {
       profiles: {
         Row: {
@@ -23,6 +23,7 @@ export type Database = {
           history_migrated_at: string | null
           id: string
           last_history_sync_at: string | null
+          selected_theme: string
           updated_at: string
           user_id: string
         }
@@ -34,6 +35,7 @@ export type Database = {
           history_migrated_at?: string | null
           id?: string
           last_history_sync_at?: string | null
+          selected_theme?: string
           updated_at?: string
           user_id: string
         }
@@ -45,6 +47,7 @@ export type Database = {
           history_migrated_at?: string | null
           id?: string
           last_history_sync_at?: string | null
+          selected_theme?: string
           updated_at?: string
           user_id?: string
         }
@@ -89,6 +92,23 @@ export type Database = {
         }
         Relationships: []
       }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  public: {
+    Tables: {
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
@@ -223,6 +243,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  scripture: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

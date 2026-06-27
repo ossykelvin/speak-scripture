@@ -60,6 +60,7 @@ jobs:
           VITE_BADGE_THRESHOLDS: 1,10,25,50,100,250
           VITE_STORAGE_PROVIDER: localStorage+supabase
           VITE_REFERENCE_FUNCTION_NAME: extract-references
+          VITE_HISTORY_SYNC_FUNCTION_NAME: sync-history
           VITE_SUPABASE_PROJECT_ID: glyrspieyqcbdrwbwlir
           VITE_SUPABASE_URL: https://glyrspieyqcbdrwbwlir.supabase.co
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_wk3QFzjOxI7C5o1WZufyNw_BqD-WF67

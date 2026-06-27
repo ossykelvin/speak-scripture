@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BIBLE_VERSIONS, fetchVerseText, formatBibleReference, type BibleReference } from "@/lib/bible";
+import { fetchVerseText, formatBibleReference, getBibleVersions, type BibleReference } from "@/lib/bible";
 import { Loader2 } from "lucide-react";
+import { useBibleProvider } from "@/hooks/use-bible-provider";
 
 interface CompareDialogProps {
   reference: BibleReference;
@@ -11,9 +12,11 @@ interface CompareDialogProps {
 }
 
 export function CompareDialog({ reference, open, onOpenChange }: CompareDialogProps) {
+  const { provider } = useBibleProvider();
+  const bibleVersions = getBibleVersions(provider);
   const currentCode = reference.version.toLowerCase();
   const defaultCompare =
-    BIBLE_VERSIONS.find((v) => v.code !== currentCode)?.code ?? "web";
+    bibleVersions.find((v) => v.code.toLowerCase() !== currentCode)?.code ?? bibleVersions[0].code;
   const [compareVersion, setCompareVersion] = useState(defaultCompare);
   const [compareText, setCompareText] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +26,7 @@ export function CompareDialog({ reference, open, onOpenChange }: CompareDialogPr
     let cancelled = false;
     setLoading(true);
     setCompareText("");
-    fetchVerseText(reference, compareVersion)
+    fetchVerseText(reference, compareVersion, provider)
       .then((text) => {
         if (!cancelled) setCompareText(text);
       })
@@ -38,7 +41,7 @@ export function CompareDialog({ reference, open, onOpenChange }: CompareDialogPr
     return () => {
       cancelled = true;
     };
-  }, [open, compareVersion, reference]);
+  }, [open, compareVersion, provider, reference]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -67,7 +70,7 @@ export function CompareDialog({ reference, open, onOpenChange }: CompareDialogPr
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {BIBLE_VERSIONS.filter((v) => v.code !== currentCode).map((v) => (
+                {bibleVersions.filter((v) => v.code.toLowerCase() !== currentCode).map((v) => (
                   <SelectItem key={v.code} value={v.code}>
                     {v.label}
                   </SelectItem>

@@ -47,6 +47,14 @@ export function createHistoryEntry({
   };
 }
 
+export function hasBibleReferences(entry: Pick<HistoryEntry, "references">): boolean {
+  return entry.references.length > 0;
+}
+
+export function scriptureHistoryOnly(entries: HistoryEntry[]): HistoryEntry[] {
+  return entries.filter(hasBibleReferences);
+}
+
 export function prependHistoryEntry(entries: HistoryEntry[], entry: HistoryEntry): HistoryEntry[] {
   return [entry, ...entries].slice(0, MAX_HISTORY_ENTRIES);
 }
