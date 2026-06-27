@@ -70,7 +70,7 @@ const About = () => {
           </div>
 
           <a
-            href="/downloads/Speak-Scripture-v1.0-debug.apk"
+            href="/downloads/Speak-Scripture-latest-debug.apk"
             download
             className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 font-medium text-primary-foreground hover:bg-primary/90"
           >

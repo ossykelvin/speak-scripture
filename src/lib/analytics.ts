@@ -1,6 +1,6 @@
 import { type HistoryEntry } from "@/lib/history";
 
-export type Period = "daily" | "weekly" | "monthly";
+export type Period = "daily" | "weekly" | "monthly" | "all-time";
 
 export interface AnalyticsSummary {
   sessions: number;
@@ -20,7 +20,9 @@ export function getRange(period: Period): { start: Date; end: Date } {
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
   let start: Date;
 
-  if (period === "daily") {
+  if (period === "all-time") {
+    start = new Date(0);
+  } else if (period === "daily") {
     start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
   } else if (period === "weekly") {
     start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay(), 0, 0, 0, 0);

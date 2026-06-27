@@ -22,7 +22,7 @@
     --secondary-foreground: 220 25% 20%;
 
     --muted: 214 32% 93%;
-    --muted-foreground: 220 10% 46%;
+    --muted-foreground: 220 10% 42%;
 
     --accent: 217 91% 50%;
     --accent-foreground: 0 0% 100%;
@@ -50,8 +50,8 @@
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 92%;
 
-    --primary: 217 91% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 8%;
 
     --secondary: 217 33% 18%;
     --secondary-foreground: 210 40% 90%;
@@ -59,18 +59,150 @@
     --muted: 217 33% 15%;
     --muted-foreground: 215 20% 60%;
 
-    --accent: 217 91% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 222 47% 8%;
 
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 217 33% 20%;
     --input: 217 33% 20%;
-    --ring: 217 91% 55%;
+    --ring: 217 91% 60%;
 
     --gold-glow: 217 91% 65%;
     --listening-pulse: 0 80% 55%;
+  }
+
+  .luminous-night {
+    --background: 0 0% 0%;
+    --foreground: 210 38% 94%;
+
+    --card: 228 18% 9%;
+    --card-foreground: 210 38% 94%;
+
+    --popover: 228 18% 9%;
+    --popover-foreground: 210 38% 94%;
+
+    --primary: 68 96% 63%;
+    --primary-foreground: 228 22% 7%;
+
+    --secondary: 215 22% 15%;
+    --secondary-foreground: 210 36% 88%;
+
+    --muted: 215 19% 13%;
+    --muted-foreground: 212 16% 68%;
+
+    --accent: 331 78% 66%;
+    --accent-foreground: 228 22% 7%;
+
+    --destructive: 0 74% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 24%;
+    --input: 214 20% 24%;
+    --ring: 68 96% 63%;
+
+    --gold-glow: 68 96% 63%;
+    --listening-pulse: 331 78% 66%;
+  }
+
+  .monochrome-slate {
+    --background: 220 10% 93%;
+    --foreground: 225 16% 9%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 225 16% 9%;
+
+    --popover: 0 0% 99%;
+    --popover-foreground: 225 16% 9%;
+
+    --primary: 238 12% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 10% 88%;
+    --secondary-foreground: 225 14% 12%;
+
+    --muted: 220 11% 90%;
+    --muted-foreground: 228 8% 39%;
+
+    --accent: 225 13% 12%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 48%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 82%;
+    --input: 220 10% 84%;
+    --ring: 238 12% 45%;
+
+    --gold-glow: 238 12% 45%;
+    --listening-pulse: 225 13% 12%;
+  }
+
+  .cedar-grove {
+    --background: 34 33% 88%;
+    --foreground: 24 40% 16%;
+
+    --card: 36 41% 93%;
+    --card-foreground: 24 40% 16%;
+
+    --popover: 36 41% 94%;
+    --popover-foreground: 24 40% 16%;
+
+    --primary: 31 72% 33%;
+    --primary-foreground: 38 48% 96%;
+
+    --secondary: 31 28% 78%;
+    --secondary-foreground: 24 42% 18%;
+
+    --muted: 34 28% 82%;
+    --muted-foreground: 25 22% 34%;
+
+    --accent: 42 82% 51%;
+    --accent-foreground: 24 42% 16%;
+
+    --destructive: 6 68% 44%;
+    --destructive-foreground: 38 48% 96%;
+
+    --border: 29 28% 66%;
+    --input: 29 28% 68%;
+    --ring: 31 72% 33%;
+
+    --gold-glow: 42 82% 51%;
+    --listening-pulse: 31 72% 33%;
+  }
+
+  .verdant-canopy {
+    --background: 101 38% 89%;
+    --foreground: 130 36% 13%;
+
+    --card: 78 42% 95%;
+    --card-foreground: 130 36% 13%;
+
+    --popover: 78 42% 96%;
+    --popover-foreground: 130 36% 13%;
+
+    --primary: 132 48% 31%;
+    --primary-foreground: 84 50% 96%;
+
+    --secondary: 102 31% 78%;
+    --secondary-foreground: 130 36% 15%;
+
+    --muted: 95 32% 83%;
+    --muted-foreground: 124 18% 33%;
+
+    --accent: 79 66% 45%;
+    --accent-foreground: 130 36% 12%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 84 50% 96%;
+
+    --border: 105 24% 64%;
+    --input: 105 24% 68%;
+    --ring: 132 48% 31%;
+
+    --gold-glow: 79 66% 50%;
+    --listening-pulse: 132 48% 31%;
   }
 }
 
@@ -96,6 +228,42 @@
     font-family: 'Inter', sans-serif;
   }
 
+  .luminous-night body {
+    background:
+      radial-gradient(circle at 78% 84%, hsl(226 85% 57% / 0.35), transparent 18rem),
+      radial-gradient(circle at 85% 48%, hsl(331 78% 66% / 0.24), transparent 13rem),
+      radial-gradient(circle at 24% 62%, hsl(159 42% 78% / 0.18), transparent 11rem),
+      hsl(var(--background));
+  }
+
+  .monochrome-slate body {
+    background:
+      radial-gradient(circle at 16% 8%, hsl(0 0% 100% / 0.95), transparent 18rem),
+      radial-gradient(circle at 84% 20%, hsl(225 14% 12% / 0.08), transparent 16rem),
+      linear-gradient(135deg, hsl(220 10% 96%), hsl(220 11% 86%));
+  }
+
+  .cedar-grove body {
+    background:
+      linear-gradient(90deg, hsl(28 44% 47% / 0.12) 0 1px, transparent 1px 34px),
+      radial-gradient(ellipse at 20% 15%, hsl(42 82% 72% / 0.34), transparent 18rem),
+      radial-gradient(ellipse at 90% 85%, hsl(24 52% 36% / 0.22), transparent 16rem),
+      linear-gradient(135deg, hsl(38 40% 90%), hsl(30 34% 77%));
+  }
+
+  .verdant-canopy body {
+    background:
+      radial-gradient(ellipse 9rem 3.5rem at 8% 12%, hsl(129 48% 36% / 0.24), transparent 72%),
+      radial-gradient(ellipse 7rem 3rem at 22% 4%, hsl(91 55% 47% / 0.2), transparent 72%),
+      radial-gradient(ellipse 8rem 3.25rem at 88% 14%, hsl(141 44% 34% / 0.22), transparent 72%),
+      radial-gradient(ellipse 7rem 2.75rem at 76% 28%, hsl(82 61% 48% / 0.2), transparent 72%),
+      radial-gradient(ellipse 8rem 3rem at 12% 88%, hsl(143 42% 34% / 0.18), transparent 72%),
+      radial-gradient(ellipse 9rem 3.5rem at 92% 82%, hsl(97 50% 40% / 0.18), transparent 72%),
+      linear-gradient(62deg, transparent 0 46%, hsl(132 39% 31% / 0.1) 46% 47%, transparent 47% 100%),
+      linear-gradient(118deg, transparent 0 42%, hsl(96 42% 39% / 0.08) 42% 43%, transparent 43% 100%),
+      linear-gradient(135deg, hsl(95 42% 92%), hsl(122 34% 80%));
+  }
+
   #root {
     width: 100%;
     min-width: 0;
@@ -113,6 +281,98 @@
     padding-right: env(safe-area-inset-right);
     padding-bottom: env(safe-area-inset-bottom);
     padding-left: env(safe-area-inset-left);
+  }
+
+  .luminous-night .app-shell {
+    background:
+      linear-gradient(180deg, hsl(0 0% 0% / 0.95), hsl(0 0% 0% / 0.74)),
+      radial-gradient(circle at 50% 0%, hsl(0 0% 100% / 0.08), transparent 9rem);
+  }
+
+  .luminous-night .bg-card,
+  .luminous-night .bg-popover {
+    background-color: hsl(var(--card) / 0.72);
+    backdrop-filter: blur(18px);
+  }
+
+  .luminous-night .border-border {
+    border-color: hsl(var(--border) / 0.65);
+  }
+
+  .luminous-night .rounded-lg {
+    border-radius: 1.35rem;
+  }
+
+  .monochrome-slate .app-shell {
+    background:
+      linear-gradient(180deg, hsl(0 0% 99% / 0.86), hsl(220 10% 92% / 0.9)),
+      hsl(var(--background));
+  }
+
+  .monochrome-slate .bg-card,
+  .monochrome-slate .bg-popover {
+    background-color: hsl(var(--card) / 0.9);
+    box-shadow: 0 12px 30px hsl(225 13% 12% / 0.08);
+  }
+
+  .monochrome-slate .bg-muted {
+    background-color: hsl(var(--muted) / 0.86);
+  }
+
+  .monochrome-slate .border-border {
+    border-color: hsl(var(--border) / 0.9);
+  }
+
+  .monochrome-slate .rounded-lg,
+  .monochrome-slate .rounded-xl {
+    border-radius: 1.15rem;
+  }
+
+  .cedar-grove .app-shell {
+    background:
+      linear-gradient(180deg, hsl(38 48% 96% / 0.84), hsl(34 33% 86% / 0.9)),
+      linear-gradient(90deg, hsl(25 44% 32% / 0.08) 0 1px, transparent 1px 28px);
+  }
+
+  .cedar-grove .bg-card,
+  .cedar-grove .bg-popover {
+    background-color: hsl(var(--card) / 0.92);
+    box-shadow:
+      inset 0 1px 0 hsl(38 48% 98% / 0.55),
+      0 14px 28px hsl(24 42% 16% / 0.12);
+  }
+
+  .cedar-grove .border-border {
+    border-color: hsl(var(--border) / 0.92);
+  }
+
+  .cedar-grove .rounded-lg,
+  .cedar-grove .rounded-xl {
+    border-radius: 1.1rem;
+  }
+
+  .verdant-canopy .app-shell {
+    background:
+      radial-gradient(ellipse 11rem 4rem at 6% 20%, hsl(128 45% 37% / 0.12), transparent 72%),
+      radial-gradient(ellipse 10rem 3.75rem at 94% 72%, hsl(82 61% 48% / 0.12), transparent 72%),
+      linear-gradient(180deg, hsl(82 50% 96% / 0.9), hsl(103 38% 88% / 0.92));
+  }
+
+  .verdant-canopy .bg-card,
+  .verdant-canopy .bg-popover {
+    background-color: hsl(var(--card) / 0.9);
+    box-shadow:
+      inset 0 1px 0 hsl(84 50% 98% / 0.7),
+      0 14px 30px hsl(130 36% 13% / 0.1);
+  }
+
+  .verdant-canopy .border-border {
+    border-color: hsl(var(--border) / 0.9);
+  }
+
+  .verdant-canopy .rounded-lg,
+  .verdant-canopy .rounded-xl {
+    border-radius: 1.25rem;
   }
 }
 

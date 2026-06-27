@@ -74,7 +74,8 @@ const Analytics = () => {
       </div>
 
       <Tabs value={period} onValueChange={(value) => setPeriod(value as Period)} className="flex-1 flex flex-col px-4 pb-4">
-        <TabsList className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="all-time" className="flex-1 text-xs sm:text-sm">All-time</TabsTrigger>
           <TabsTrigger value="daily" className="flex-1">Today</TabsTrigger>
           <TabsTrigger value="weekly" className="flex-1">This Week</TabsTrigger>
           <TabsTrigger value="monthly" className="flex-1">This Month</TabsTrigger>
